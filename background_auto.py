@@ -2,6 +2,7 @@ import os
 import sys
 import ctypes
 import random
+import winreg
 
 class Wallpaper:
 	def __init__(self):
@@ -18,8 +19,17 @@ class Wallpaper:
 		
 		ctypes.windll.user32.SystemParametersInfoW(20, 0, os.path.join(self.path, 'backgrounds', 'winter_snowfall.jpg'), 0)
 
+		# Creates handle for key object and nabs it for manipulation. https://docs.python.org/3/library/winreg.html
+		# ACCESS: May need to change to set key.
+		sub_key = R'Control Panel\Desktop'
+		key_value_name = R'WallpaperStyle'
+		self.mykey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key, 0, access=winreg.KEY_READ)
+		self.value = winreg.QueryValueEx(self.mykey, key_value_name)
+
+		# winreg.QueryInfoKey(self.mykey)
+
 		'''
-		HKEY_CURRENT_USER\Control Panel\Desktop\WallpaperStyle
+		HKEY_CURRENT_USER\\Control Panel\\Desktop\\WallpaperStyle
 		Wallpaper styles: 1 is scale, 2 is stretch. Scale slim wallpapers, Stretch wide ones.
 		1. Find way to set HKEY to 1 or 2 programmatically before wallpaper is set
 		2. Get screen Height and Width in pixels (only once higher up in code)
@@ -39,4 +49,4 @@ class Wallpaper:
 
 runit = Wallpaper()
 # print(os.path.join(runit.path, 'backgrounds'))
-# print(runit.backgrounds)
+print(runit.value)
